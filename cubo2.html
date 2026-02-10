@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo 3D - Sin Texturas</title>
+    <style>
+        body { margin: 0; overflow: hidden; background: #111; }
+        canvas { display: block; }
+        .info {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: white;
+            font-family: Arial, sans-serif;
+            background: rgba(0,0,0,0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            border-left: 4px solid #00ff00;
+        }
+    </style>
+</head>
+<body>
+    <div class="info">
+        ✅ Cubo 3D funcionando | 🖱️ Rotar: Click + arrastrar | 🔍 Zoom: Rueda mouse
+    </div>
+
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.module.js",
+        "orbit": "https://cdn.jsdelivr.net/npm/three@0.158.0/examples/jsm/controls/OrbitControls.js"
+    }
+}
+</script>
+<script type="module">
+    import * as THREE from 'three';
+    import { OrbitControls } from 'orbit';
+    
+    // ========== CONFIGURACIÓN INICIAL ==========
+    const escena = new THREE.Scene();
+    escena.background = new THREE.Color(0x111111);
+
+    const camara = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    camara.position.set(4, 2, 4);
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.shadowMap.enabled = true;
+    document.body.appendChild(renderer.domElement);
+
+    // ========== CREAR CUBO CON COLORES ==========
+    const geometria = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+    
+    // NO USAR IMÁGENES - USAR COLORES SÓLIDOS
+    const materiales = [
+        new THREE.MeshPhongMaterial({ color: 0xff4444, shininess: 100 }), // Rojo
+        new THREE.MeshPhongMaterial({ color: 0x44ff44, shininess: 100 }), // Verde
+        new THREE.MeshPhongMaterial({ color: 0x4444ff, shininess: 100 }), // Azul
+        new THREE.MeshPhongMaterial({ color: 0xffff44, shininess: 100 }), // Amarillo
+        new THREE.MeshPhongMaterial({ color: 0xff44ff, shininess: 100 }), // Magenta
+        new THREE.MeshPhongMaterial({ color: 0x44ffff, shininess: 100 })  // Cian
+    ];
+
+    const cubo = new THREE.Mesh(geometria, materiales);
+    cubo.castShadow = true;
+    escena.add(cubo);
+
+    // ========== ILUMINACIÓN ==========
+    const luzAmbiental = new THREE.AmbientLight(0xffffff, 0.4);
+    escena.add(luzAmbiental);
+
+    const luzDireccional = new THREE.DirectionalLight(0xffffff, 0.8);
+    luzDireccional.position.set(10, 20, 15);
+    luzDireccional.castShadow = true;
+    luzDireccional.shadow.mapSize.width = 2048;
+    luzDireccional.shadow.mapSize.height = 2048;
+    escena.add(luzDireccional);
+
+    // ========== SUELO ==========
+    const sueloGeo = new THREE.PlaneGeometry(20, 20);
+    const sueloMat = new THREE.MeshPhongMaterial({ 
+        color: 0x333333, 
+        side: THREE.DoubleSide 
+    });
+    const suelo = new THREE.Mesh(sueloGeo, sueloMat);
+    suelo.rotation.x = Math.PI / 2;
+    suelo.position.y = -1.8;
+    suelo.receiveShadow = true;
+    escena.add(suelo);
+
+    // ========== CONTROLES ==========
+    const controles = new OrbitControls(camara, renderer.domElement);
+    controles.enableDamping = true;
+    controles.dampingFactor = 0.05;
+    controles.screenSpacePanning = false;
+    controles.maxPolarAngle = Math.PI / 2;
+
+    // ========== ANIMACIÓN ==========
+    function animar() {
+        requestAnimationFrame(animar);
+        
+        // Rotación suave del cubo
+        cubo.rotation.x += 0.005;
+        cubo.rotation.y += 0.01;
+        
+        // Actualizar controles
+        controles.update();
+        
+        // Renderizar
+        renderer.render(escena, camara);
+    }
+    
+    animar();
+
+    // ========== MANEJO DE REDIMENSIONAMIENTO ==========
+    window.addEventListener('resize', () => {
+        camara.aspect = window.innerWidth / window.innerHeight;
+        camara.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+    });
+
+    // ========== CONFIRMACIÓN EN CONSOLA ==========
+    console.log("🎮 Sistema 3D inicializado correctamente");
+    console.log("📍 URL: http://localhost:8000/");
+    console.log("📦 Three.js versión: r158");
+    console.log("✅ No se requieren imágenes externas");
+</script>
+</body>
+</html>
+'@ | Out-File -FilePath "index.html" -Encoding UTF8
+
+# Verifica que el archivo se creó
+Get-Content index.html -First 5

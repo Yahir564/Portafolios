@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cubo y Prisma 3D</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 0; 
+            overflow: hidden; 
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        canvas { 
+            display: block; 
+        }
+        
+        .info-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: white;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            max-width: 300px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            
+            /* Compatibilidad con todos los navegadores */
+            -webkit-backdrop-filter: blur(10px); /* Safari 9+, iOS Safari 9+ */
+            backdrop-filter: blur(10px); /* Standard */
+        }
+        
+        /* Fallback para navegadores que no soportan backdrop-filter */
+        @supports not (backdrop-filter: blur(10px)) {
+            .info-panel {
+                background: rgba(0, 0, 0, 0.85);
+            }
+        }
+        
+        h1 {
+            margin: 0 0 15px 0;
+            font-size: 24px;
+            color: #4fc3f7;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .controls {
+            margin: 15px 0;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+        
+        .controls p {
+            margin: 8px 0;
+        }
+        
+        .object-info {
+            background: rgba(76, 175, 80, 0.15);
+            padding: 12px;
+            border-radius: 8px;
+            margin-top: 15px;
+            border-left: 4px solid #4CAF50;
+            font-size: 14px;
+        }
+        
+        .object-info:nth-child(2) {
+            background: rgba(255, 64, 129, 0.15);
+            border-left: 4px solid #ff4081;
+        }
+        
+        .highlight {
+            color: #4fc3f7;
+            font-weight: bold;
+        }
+        
+        .icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        
+        /* Indicador de compatibilidad (opcional) */
+        .compatibility-note {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Responsive para móviles */
+        @media (max-width: 768px) {
+            .info-panel {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                max-width: none;
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 20px;
+            }
+            
+            .controls, .object-info {
+                font-size: 13px;
+            }
+            
+            .compatibility-note {
+                display: none;
+            }
+        }
+        
+        /* Animación de entrada suave */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .info-panel {
+            animation: fadeIn 0.8s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <!-- Panel de información -->
+    <div class="info-panel">
+        <h1>🌐 Escena 3D Interactiva</h1>
+        
+        <div class="controls">
+            <p><span class="icon">🎮</span> <span class="highlight">Controles:</span></p>
+            <p>• <span class="highlight">Click izquierdo + arrastrar:</span> Rotar vista</p>
+            <p>• <span class="highlight">Click derecho + arrastrar:</span> Mover cámara</p>
+            <p>• <span class="highlight">Rueda del mouse:</span> Zoom in/out</p>
+        </div>
+        
+        <div class="object-info">
+            <p><span class="icon">✅</span> <span class="highlight">Cubo Verde</span></p>
+            <p>• Rotación automática XYZ</p>
+            <p>• Movimiento oscilante vertical</p>
+            <p>• Con wireframe negro</p>
+        </div>
+        
+        <div class="object-info">
+            <p><span class="icon">🔺</span> <span class="highlight">Prisma Triangular Rosa</span></p>
+            <p>• Rotación en 3 ejes</p>
+            <p>• Movimiento oscilante desfasado</p>
+            <p>• Geometría: Cono de 3 lados</p>
+        </div>
+    </div>
+    
+    <!-- Nota de compatibilidad -->
+    <div class="compatibility-note">
+        Compatible con Chrome, Firefox, Safari, Edge
+    </div>
+
+    <script type="module">
+        // 1. IMPORTACIONES (ES6 Modules desde CDN)
+        import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
+        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
+
+        // 2. CONFIGURACIÓN BÁSICA
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x111122);
+        
+        const camera = new THREE.PerspectiveCamera(
+            75, 
+            window.innerWidth / window.innerHeight, 
+            0.1, 
+            1000
+        );
+        camera.position.set(0, 2, 8);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2)); // Limitar pixel ratio para performance
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // 3. CONTROLES DE CÁMARA
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.screenSpacePanning = true;
+        controls.maxPolarAngle = Math.PI;
+        controls.minDistance = 3;
+        controls.maxDistance = 20;
+        controls.rotateSpeed = 0.8;
+        controls.zoomSpeed = 1.2;
+
+        // 4. ILUMINACIÓN
+        const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(10, 20, 15);
+        directionalLight.castShadow = true;
+        directionalLight.shadow.mapSize.width = 1024;
+        directionalLight.shadow.mapSize.height = 1024;
+        directionalLight.shadow.camera.near = 0.5;
+        directionalLight.shadow.camera.far = 50;
+        scene.add(directionalLight);
+
+        // 5. SUELO (Plano de referencia)
+        const groundGeometry = new THREE.PlaneGeometry(30, 30);
+        const groundMaterial = new THREE.MeshStandardMaterial({ 
+            color: 0x333333,
+            roughness: 0.8,
+            metalness: 0.2
+        });
+        const ground = new THREE.Mesh(groundGeometry, groundMaterial);
+        ground.rotation.x = -Math.PI / 2;
+        ground.position.y = -2;
+        ground.receiveShadow = true;
+        scene.add(ground);
+
+        // 6. CREACIÓN DE OBJETOS
+
+        // --- Cubo Verde ---
+        const cubeGeometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
+        const cubeMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0x00ff00,
+            shininess: 100,
+            specular: 0x222222
+        });
+        const cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+        cube.position.set(-3, 0, 0);
+        cube.castShadow = true;
+        scene.add(cube);
+
+        // Wireframe al cubo
+        const cubeEdges = new THREE.EdgesGeometry(cubeGeometry);
+        const cubeLineMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x000000,
+            linewidth: 1
+        });
+        const cubeWireframe = new THREE.LineSegments(cubeEdges, cubeLineMaterial);
+        cube.add(cubeWireframe);
+
+        // --- Prisma Triangular (Pirámide triangular) Rosa ---
+        const pyramidGeometry = new THREE.ConeGeometry(1.2, 2, 3);
+        const pyramidMaterial = new THREE.MeshPhongMaterial({ 
+            color: 0xff00ff,
+            shininess: 100,
+            specular: 0x222222
+        });
+        const pyramid = new THREE.Mesh(pyramidGeometry, pyramidMaterial);
+        pyramid.position.set(3, 0, 0);
+        pyramid.rotation.y = Math.PI / 2;
+        pyramid.castShadow = true;
+        scene.add(pyramid);
+
+        // Wireframe para la pirámide
+        const pyramidEdges = new THREE.EdgesGeometry(pyramidGeometry);
+        const pyramidLineMaterial = new THREE.LineBasicMaterial({ 
+            color: 0x000000,
+            linewidth: 1
+        });
+        const pyramidWireframe = new THREE.LineSegments(pyramidEdges, pyramidLineMaterial);
+        pyramid.add(pyramidWireframe);
+
+        // 7. EJES DE REFERENCIA
+        const axesHelper = new THREE.AxesHelper(5);
+        scene.add(axesHelper);
+
+        // 8. ESTADÍSTICAS DE PERFORMANCE (Opcional)
+        let frameCount = 0;
+        let lastTime = performance.now();
+        let fps = 60;
+
+        // 9. ANIMACIÓN
+        let time = 0;
+        
+        const animate = (currentTime) => {
+            requestAnimationFrame(animate);
+            
+            // Calcular FPS
+            frameCount++;
+            if (currentTime >= lastTime + 1000) {
+                fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            time += 0.016; // Aproximadamente 60 FPS
+
+            // Actualizar controles
+            controls.update();
+
+            // Rotación del cubo
+            cube.rotation.x = time * 0.5;
+            cube.rotation.y = time * 0.8;
+            
+            // Movimiento oscilante vertical para el cubo
+            cube.position.y = Math.sin(time) * 0.5;
+
+            // Rotación de la pirámide
+            pyramid.rotation.x = time * 0.3;
+            pyramid.rotation.y = -time * 0.6;
+            pyramid.rotation.z = time * 0.2;
+            
+            // Movimiento oscilante vertical para la pirámide
+            pyramid.position.y = Math.cos(time * 1.2) * 0.5;
+
+            // Renderizar escena
+            renderer.render(scene, camera);
+        };
+
+        // 10. RESPONSIVIDAD
+        const handleResize = () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        };
+
+        window.addEventListener('resize', handleResize);
+
+        // 11. DETECCIÓN DE ERRORES
+        window.addEventListener('error', (e) => {
+            console.error('Error en la aplicación 3D:', e.error);
+            document.body.innerHTML = `
+                <div style="
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: #1a1a2e;
+                    color: white;
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    font-family: Arial, sans-serif;
+                    padding: 20px;
+                    text-align: center;
+                ">
+                    <h1 style="color: #ff4081;">⚠️ Error en la aplicación 3D</h1>
+                    <p>${e.message || 'Error desconocido'}</p>
+                    <p style="margin-top: 20px; font-size: 14px; color: #ccc;">
+                        Intenta recargar la página o usar un navegador actualizado
+                    </p>
+                </div>
+            `;
+        });
+
+        // 12. INICIAR ANIMACIÓN
+        animate();
+
+        // 13. CONFIRMACIÓN EN CONSOLA
+        console.log('✅ Escena 3D cargada correctamente');
+        console.log('📦 Three.js versión: r128');
+        console.log('🎮 Controles de órbita activados');
+        console.log('🎯 Objetos: Cubo verde y Prisma triangular rosa');
+        console.log('🖥️ Renderer: WebGL');
+        console.log('📱 Responsive: Sí');
+    </script>
+</body>
+</html>
