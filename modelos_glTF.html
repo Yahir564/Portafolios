@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modelos GLTF | Portafolio 3D</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #0f172a;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        /* Barra de navegación superior */
+        .navbar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 20;
+            box-sizing: border-box;
+            background: linear-gradient(to bottom, rgba(15, 23, 42, 0.9), transparent);
+        }
+
+        .logo {
+            color: #00ff88;
+            font-weight: bold;
+            font-size: 1.2rem;
+            text-decoration: none;
+        }
+
+        .back-btn {
+            padding: 8px 16px;
+            background: rgba(59, 130, 246, 0.8);
+            color: white;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn:hover {
+            background: rgba(59, 130, 246, 1);
+            transform: translateY(-2px);
+        }
+
+        /* Panel de información */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(15, 23, 42, 0.8);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px;
+            border-left: 4px solid #00ff88;
+            z-index: 10;
+            max-width: 300px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            color: #00ff88;
+            font-size: 1.1rem;
+        }
+
+        .info-panel p {
+            margin: 5px 0;
+            font-size: 0.9rem;
+            color: #ccd6f6;
+        }
+
+        .info-panel .model-count {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        .model-badge {
+            background: rgba(0, 255, 136, 0.2);
+            padding: 4px 8px;
+            border-radius: 20px;
+            color: #00ff88;
+        }
+
+        /* Instrucciones */
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            z-index: 10;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        /* Loader */
+        .loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 1.2rem;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 20px;
+            border-radius: 12px;
+            z-index: 100;
+            display: none;
+        }
+
+        .loader.active {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Barra de navegación -->
+    <div class="navbar">
+        <a href="#" class="logo">⚡ GLTF Viewer</a>
+        <a href="index.html" class="back-btn">← Volver al Portafolio</a>
+    </div>
+
+    <!-- Panel de información -->
+    <div class="info-panel">
+        <h3>📦 Modelos glTF Cargados</h3>
+        <p id="model-status">Cargando modelos...</p>
+        <div class="model-count" id="model-badges">
+            <span class="model-badge">⏳ AnimatedCube</span>
+            <span class="model-badge">⏳ BarnLamp</span>
+            <span class="model-badge">⏳ AnimatedTriangle</span>
+        </div>
+        
+    </div>
+
+    <!-- Instrucciones -->
+    <div class="instructions">
+        <span>🔄 Rotación automática: Y +0.005</span>
+    </div>
+
+    <!-- Loader -->
+    <div class="loader" id="loader">
+        Cargando modelos 3D...
+    </div>
+
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://unpkg.com/three@0.128.0/build/three.module.js",
+            "three/addons/": "https://unpkg.com/three@0.128.0/examples/jsm/"
+        }
+    }
+    </script>
+
+    <script type="module">
+        import * as THREE from 'three';
+        import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+        import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+        // Elementos DOM
+        const loaderEl = document.getElementById('loader');
+        const modelStatus = document.getElementById('model-status');
+        const modelBadges = document.getElementById('model-badges').children;
+
+        // 1. ESCENA Y CÁMARA
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0f172a);
+
+        const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.set(4, 2, 8);
+        camera.lookAt(0, 1, 0);
+
+        const renderer = new THREE.WebGLRenderer({ 
+            antialias: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        
+        // CORRECCIÓN: outputEncoding está deprecado en versiones recientes
+        if (renderer.outputEncoding) {
+            renderer.outputEncoding = THREE.sRGBEncoding;
+        } else {
+            renderer.colorSpace = THREE.SRGBColorSpace;
+        }
+        
+        renderer.physicallyCorrectLights = true;
+        renderer.shadowMap.enabled = true;
+        renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        document.body.appendChild(renderer.domElement);
+
+        // 2. LUCES MEJORADAS
+        const ambient = new THREE.AmbientLight(0xffffff, 0.6);
+        scene.add(ambient);
+
+        // Luz principal (sol)
+        const sun = new THREE.DirectionalLight(0xfff5d1, 1.5);
+        sun.position.set(5, 10, 7);
+        sun.castShadow = true;
+        sun.shadow.mapSize.width = 1024;
+        sun.shadow.mapSize.height = 1024;
+        const d = 10;
+        sun.shadow.camera.left = -d;
+        sun.shadow.camera.right = d;
+        sun.shadow.camera.top = d;
+        sun.shadow.camera.bottom = -d;
+        sun.shadow.camera.near = 1;
+        sun.shadow.camera.far = 15;
+        scene.add(sun);
+
+        // Luz de relleno
+        const fillLight = new THREE.PointLight(0x4466ff, 0.3);
+        fillLight.position.set(-5, 3, 5);
+        scene.add(fillLight);
+
+        // Luz trasera
+        const backLight = new THREE.PointLight(0xffaa44, 0.2);
+        backLight.position.set(0, 2, -5);
+        scene.add(backLight);
+
+        // 3. ELEMENTOS DE APOYO (grid y ejes)
+        const gridHelper = new THREE.GridHelper(20, 20, 0x00ff88, 0x333333);
+        gridHelper.position.y = -0.5;
+        scene.add(gridHelper);
+
+        // Esfera de ambiente para reflejos
+        // scene.add(new THREE.AxesHelper(3));
+
+        // 4. CARGA DE MODELOS
+        const loader = new GLTFLoader();
+        const loadedModels = [];
+        let modelsLoaded = 0;
+        const totalModels = 3;
+
+        const configModels = [
+            {
+                path: './models/AnimatedCube.gltf',
+                x: -3.5,
+                y: 0,
+                z: 0,
+                scale: 1.5,
+                name: 'AnimatedCube',
+                color: '#00ff88'
+            },
+            {
+                path: './models/AnisotropyBarnLamp.gltf',
+                x: 0,
+                y: 0,
+                z: 0,
+                scale: 1.2,
+                name: 'BarnLamp',
+                color: '#0099ff'
+            },
+            {
+                path: './models/AnimatedTriangle.gltf',
+                x: 3.5,
+                y: 0,
+                z: 0,
+                scale: 1.5,
+                name: 'AnimatedTriangle',
+                color: '#ff00aa'
+            }
+        ];
+
+        // Función para actualizar estado
+        function updateLoadStatus() {
+            modelsLoaded++;
+            if (modelsLoaded === totalModels) {
+                loaderEl.classList.remove('active');
+                modelStatus.textContent = `✅ ${totalModels} modelos cargados correctamente`;
+            }
+            
+            // Actualizar badges
+            for (let i = 0; i < modelsLoaded; i++) {
+                if (modelBadges[i]) {
+                    modelBadges[i].innerHTML = `✅ ${configModels[i].name}`;
+                    modelBadges[i].style.background = 'rgba(0, 255, 136, 0.2)';
+                }
+            }
+        }
+
+        // Mostrar loader
+        loaderEl.classList.add('active');
+        modelStatus.textContent = `Cargando modelos... (0/${totalModels})`;
+
+        configModels.forEach((data, index) => {
+            loader.load(data.path, 
+                (gltf) => {
+                    const model = gltf.scene;
+                    
+                    // Posicionamiento
+                    model.position.set(data.x, data.y, data.z);
+                    model.scale.set(data.scale, data.scale, data.scale);
+                    
+                    // Rotación inicial
+                    model.rotation.y = Math.PI / 4 * index;
+
+                    // --- TRAVERSE: Modificar propiedades de materiales ---
+                    model.traverse((child) => {
+                        if (child.isMesh) {
+                            // Habilitar sombras
+                            child.castShadow = true;
+                            child.receiveShadow = true;
+                            
+                            // Clonar material para personalizar
+                            if (Array.isArray(child.material)) {
+                                child.material = child.material.map(m => {
+                                    const newMat = m.clone();
+                                    newMat.metalness = 0.1;
+                                    newMat.roughness = 0.3;
+                                    newMat.emissive = new THREE.Color(0x000000);
+                                    if (data.name === 'BarnLamp') {
+                                        newMat.emissive = new THREE.Color(0x332200);
+                                    }
+                                    return newMat;
+                                });
+                            } else {
+                                const newMat = child.material.clone();
+                                newMat.metalness = 0.1;
+                                newMat.roughness = 0.3;
+                                newMat.emissive = new THREE.Color(0x000000);
+                                if (data.name === 'BarnLamp') {
+                                    newMat.emissive = new THREE.Color(0x332200);
+                                }
+                                child.material = newMat;
+                            }
+                        }
+                    });
+
+                    scene.add(model);
+                    loadedModels.push({
+                        mesh: model,
+                        name: data.name,
+                        speed: 0.005 + (index * 0.001)
+                    });
+                    
+                    console.log(`✅ Modelo ${data.name} cargado con éxito`);
+                    updateLoadStatus();
+                },
+                (xhr) => {
+                    // Progreso
+                    const percent = Math.round((xhr.loaded / xhr.total) * 100);
+                    if (index === 0) {
+                        modelStatus.textContent = `Cargando ${data.name}... ${percent}% (${modelsLoaded}/${totalModels})`;
+                    }
+                },
+                (error) => {
+                    console.error(`❌ Error cargando ${data.name}:`, error);
+                    modelStatus.textContent = `Error cargando ${data.name}`;
+                    
+                    // Crear cubo de respaldo
+                    const geometry = new THREE.BoxGeometry(1, 1, 1);
+                    const material = new THREE.MeshStandardMaterial({ color: data.color });
+                    const fallback = new THREE.Mesh(geometry, material);
+                    fallback.position.set(data.x, data.y, data.z);
+                    fallback.scale.set(data.scale, data.scale, data.scale);
+                    scene.add(fallback);
+                    loadedModels.push({
+                        mesh: fallback,
+                        name: data.name,
+                        speed: 0.005
+                    });
+                    
+                    updateLoadStatus();
+                }
+            );
+        });
+
+        // 5. CONTROLES
+        const controls = new OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+        controls.dampingFactor = 0.05;
+        controls.autoRotate = false;
+        controls.enableZoom = true;
+        controls.target.set(0, 1, 0);
+        controls.maxPolarAngle = Math.PI / 2;
+
+        // 6. ANIMACIÓN
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotación automática de modelos
+            loadedModels.forEach(item => {
+                if (item.mesh) {
+                    item.mesh.rotation.y += item.speed;
+                }
+            });
+
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // 7. RESPONSIVIDAD
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+
+        // 8. INFORMACIÓN EN CONSOLA
+        console.log('🚀 Visor GLTF iniciado correctamente');
+    </script>
+</body>
+
+</html>

@@ -62,10 +62,26 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.3s;
+            position: relative;
         }
         
         .nav-links a:hover {
             color: var(--primary);
+        }
+        
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--primary);
+            transition: width 0.3s;
+        }
+        
+        .nav-links a:hover::after {
+            width: 100%;
         }
         
         /* SECCIONES */
@@ -79,6 +95,18 @@
             margin-bottom: 2rem;
             color: var(--primary);
             text-align: center;
+            position: relative;
+        }
+        
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 3px;
+            background-color: var(--primary);
         }
         
         /* INICIO */
@@ -89,16 +117,17 @@
             align-items: center;
             text-align: center;
             padding-top: 8rem;
+            background: radial-gradient(circle at center, #1a2a3a 0%, #0a192f 100%);
         }
         
         .hero-content h1 {
-            font-size: 3rem;
+            font-size: 3.5rem;
             margin-bottom: 1rem;
             color: var(--light);
         }
         
         .hero-content h2 {
-            font-size: 1.5rem;
+            font-size: 1.8rem;
             color: var(--gray);
             margin-bottom: 2rem;
         }
@@ -107,10 +136,12 @@
             max-width: 600px;
             margin: 0 auto 2rem auto;
             color: var(--gray);
+            font-size: 1.1rem;
         }
         
         .highlight {
             color: var(--primary);
+            text-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
         }
         
         .cta-button {
@@ -129,9 +160,14 @@
         .cta-button:hover {
             background-color: rgba(0, 255, 136, 0.1);
             transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 255, 136, 0.2);
         }
         
         /* SOBRE MÍ */
+        #sobre-mi {
+            background-color: var(--dark);
+        }
+        
         .about-content {
             max-width: 800px;
             margin: 0 auto;
@@ -139,11 +175,12 @@
         }
         
         .about-text {
-            background-color: rgba(17, 34, 64, 0.5);
+            background-color: rgba(17, 34, 64, 0.7);
             padding: 2rem;
-            border-radius: 10px;
+            border-radius: 15px;
             border-left: 4px solid var(--primary);
             margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
         }
         
         .about-text p {
@@ -153,36 +190,51 @@
         
         /* DISEÑO 3D */
         #diseno-3d {
-            background-color: rgba(17, 34, 64, 0.3);
+            background-color: rgba(17, 34, 64, 0.5);
         }
         
         .practices-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
         
         .practice-card {
-            background-color: rgba(17, 34, 64, 0.7);
-            border-radius: 10px;
+            background-color: rgba(17, 34, 64, 0.8);
+            border-radius: 15px;
             overflow: hidden;
             border: 1px solid rgba(0, 255, 136, 0.1);
-            transition: transform 0.3s;
+            transition: transform 0.3s, border-color 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         
         .practice-card:hover {
-            transform: translateY(-5px);
+            transform: translateY(-10px);
             border-color: var(--primary);
+            box-shadow: 0 20px 30px rgba(0, 255, 136, 0.1);
         }
         
         .practice-canvas {
-            height: 250px;
+            height: 200px;
             background-color: #000;
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .practice-canvas::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 60%, rgba(0, 255, 136, 0.1));
+            pointer-events: none;
         }
         
         .practice-content {
@@ -192,43 +244,83 @@
         .practice-content h3 {
             color: var(--primary);
             margin-bottom: 1rem;
+            font-size: 1.3rem;
         }
         
         .practice-content p {
             color: var(--gray);
             margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+        
+        .practice-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .tag {
+            background: rgba(0, 255, 136, 0.1);
+            color: var(--primary);
+            padding: 0.2rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(0, 255, 136, 0.3);
         }
         
         /* PROYECTOS */
+        #proyectos {
+            background-color: var(--dark);
+        }
+        
         .projects-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
             gap: 2rem;
             max-width: 1200px;
             margin: 0 auto;
         }
         
         .project-card {
-            background-color: rgba(17, 34, 64, 0.7);
-            border-radius: 10px;
+            background-color: rgba(17, 34, 64, 0.8);
+            border-radius: 15px;
             padding: 2rem;
             border: 1px solid rgba(0, 153, 255, 0.1);
+            transition: transform 0.3s, border-color 0.3s;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--secondary);
         }
         
         .project-card h3 {
-            color: var(--primary);
+            color: var(--secondary);
             margin-bottom: 1rem;
+            font-size: 1.2rem;
         }
         
         .project-card p {
             color: var(--gray);
             margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .project-card .project-tech {
+            color: var(--primary);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         /* FOOTER */
         footer {
-            background-color: rgba(17, 34, 64, 0.8);
-            padding: 2rem;
+            background-color: rgba(17, 34, 64, 0.9);
+            padding: 3rem 2rem;
             text-align: center;
             border-top: 1px solid rgba(0, 255, 136, 0.2);
         }
@@ -237,17 +329,28 @@
             display: flex;
             justify-content: center;
             gap: 1.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 2rem;
         }
         
         .social-links a {
             color: var(--light);
             font-size: 1.5rem;
-            transition: color 0.3s;
+            transition: all 0.3s;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .social-links a:hover {
             color: var(--primary);
+            transform: translateY(-5px);
+            background: rgba(0, 255, 136, 0.1);
+            border-color: var(--primary);
         }
         
         .copyright {
@@ -269,12 +372,20 @@
                 font-size: 2.5rem;
             }
             
+            .hero-content h2 {
+                font-size: 1.3rem;
+            }
+            
             section {
-                padding: 3rem 1rem;
+                padding: 4rem 1rem;
             }
             
             #inicio {
                 padding-top: 6rem;
+            }
+            
+            .practices-grid, .projects-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -298,7 +409,8 @@
             <h1>Diego Yahir <span class="highlight">Castañon Sanchez</span></h1>
             <h2>Desarrollador y Diseñador 3D</h2>
             <p class="hero-description">
-                Portafolio de prácticas y proyectos en diseño 3D interactivo con Three.js
+                Explorando la intersección entre el desarrollo web y la visualización 3D interactiva.
+                Especializado en Three.js y tecnologías WebGL.
             </p>
             <div>
                 <a href="#diseno-3d" class="cta-button">Ver Prácticas 3D</a>
@@ -312,9 +424,9 @@
         <h2 class="section-title">Sobre Mí</h2>
         <div class="about-content">
             <div class="about-text">
-                <p>Hola, soy Diego Yahir Castañon Sanchez, estudiante apasionado por el desarrollo web y el diseño 3D interactivo.</p>
-                <p>Actualmente estoy enfocado en aprender y aplicar tecnologías como Three.js, WebGL y herramientas de diseño 3D para crear experiencias visuales interactivas en el navegador.</p>
-                <p>Este portafolio muestra mis prácticas y proyectos realizados en el área de diseño 3D, donde combino programación con creatividad visual.</p>
+                <p>Hola, soy Diego Yahir Castañon Sanchez, estudiante apasionado por el desarrollo web y el diseño 3D interactivo. Me especializo en crear experiencias visuales inmersivas utilizando tecnologías modernas como Three.js y WebGL.</p>
+                <p>Actualmente estoy enfocado en aprender y aplicar técnicas avanzadas de renderizado 3D en el navegador, combinando programación con creatividad visual para desarrollar proyectos innovadores.</p>
+                <p>Este portafolio muestra mis prácticas y proyectos realizados en el área de diseño 3D, donde cada trabajo representa un paso en mi aprendizaje y dominio de estas tecnologías.</p>
             </div>
         </div>
     </section>
@@ -323,23 +435,63 @@
     <section id="diseno-3d">
         <h2 class="section-title">Diseño 3D - Prácticas</h2>
         <div class="practices-grid">
-            <!-- PRÁCTICA 1: Cubo girando -->
+            <!-- PRÁCTICA 1: cubo1.html -->
             <div class="practice-card">
                 <div class="practice-canvas" id="canvas1"></div>
                 <div class="practice-content">
-                    <h3>Práctica 1: Cubo 3D Girando</h3>
-                    <p>Cubo con rotación automática en todos los ejes. Implementación básica de Three.js con geometría BoxGeometry y materiales básicos.</p>
-                    <a href="cubo1.html" class="cta-button">Cargar Práctica</a>
+                    <h3>Práctica 01: Cubo 3D Básico</h3>
+                    <p>Primer acercamiento a Three.js. Cubo con rotación automática y materiales básicos. Introducción a escenas, cámaras y renderizado.</p>
+                    <div class="practice-tags">
+                        <span class="tag">Three.js</span>
+                        <span class="tag">BoxGeometry</span>
+                        <span class="tag">Rotación</span>
+                    </div>
+                    <a href="cubo1.html" class="cta-button">Ver Práctica</a>
                 </div>
             </div>
             
-            <!-- PRÁCTICA 2: OrbitControls y Texturas -->
+            <!-- PRÁCTICA 2: cubo2.html -->
             <div class="practice-card">
                 <div class="practice-canvas" id="canvas2"></div>
+                <div class="practice-content">
+                    <h3>Práctica 02: Cubo con Colores</h3>
+                    <p>Cubo con diferentes colores por cara, iluminación mejorada y sombras. Implementación de MeshPhongMaterial y luces direccionales.</p>
+                    <div class="practice-tags">
+                        <span class="tag">MeshPhongMaterial</span>
+                        <span class="tag">Sombras</span>
+                        <span class="tag">Iluminación</span>
+                    </div>
+                    <a href="cubo2.html" class="cta-button">Ver Práctica</a>
+                </div>
+            </div>
+            
+            <!-- PRÁCTICA 3: modelos_glTF.html -->
+            <div class="practice-card">
+                <div class="practice-canvas" id="canvas3"></div>
+                <div class="practice-content">
+                    <h3>Práctica 03: Modelos glTF</h3>
+                    <p>Carga y visualización de modelos 3D en formato glTF. Uso de GLTFLoader, transformaciones y modificación de materiales con traverse().</p>
+                    <div class="practice-tags">
+                        <span class="tag">GLTFLoader</span>
+                        <span class="tag">Modelos 3D</span>
+                        <span class="tag">Traverse</span>
+                    </div>
+                    <a href="modelos_glTF.html" class="cta-button">Ver Práctica</a>
+                </div>
+            </div>
+            
+            <!-- PRÁCTICA 4: practica04.html -->
+            <div class="practice-card">
+                <div class="practice-canvas" id="canvas4"></div>
                 <div class="practice-content"> 
-                    <h3>Práctica 2: OrbitControls y Texturas</h3>
-                    <p>Cubo con controles de órbita interactivos y aplicación de texturas en cada cara. Uso de OrbitControls para navegación 3D.</p>
-                    <a href="cubo2.html" class="cta-button">Cargar Práctica</a>
+                    <h3>Práctica 04: Escena Profesional</h3>
+                    <p>Escena avanzada con múltiples geometrías, materiales PBR, iluminación dinámica y controles interactivos. Efectos de niebla y partículas.</p>
+                    <div class="practice-tags">
+                        <span class="tag">PBR</span>
+                        <span class="tag">Partículas</span>
+                        <span class="tag">UI/UX</span>
+                    </div>
+                    <a href="practica04.html" class="cta-button">Ver Práctica</a>
                 </div>
             </div>
         </div>
@@ -351,46 +503,40 @@
         <div class="projects-grid">
             <div class="project-card">
                 <h3>Visualizador 3D de Productos</h3>
-                <p>Sistema interactivo para visualizar productos en 3D con rotación, zoom y detalles personalizados.</p>
-                <p><strong>Tecnologías:</strong> Three.js, JavaScript, HTML5</p>
+                <p>Sistema interactivo para visualizar productos en 3D con rotación, zoom y detalles personalizados. Ideal para e-commerce.</p>
+                <p class="project-tech"><strong>Tecnologías:</strong> Three.js, JavaScript, HTML5, CSS3</p>
             </div>
             
             <div class="project-card">
                 <h3>Simulador de Física 3D</h3>
-                <p>Simulación básica de física aplicada a objetos 3D con colisiones y gravedad.</p>
-                <p><strong>Tecnologías:</strong> Three.js, Cannon.js, WebGL</p>
+                <p>Simulación básica de física aplicada a objetos 3D con colisiones, gravedad y detección de impactos usando Cannon.js.</p>
+                <p class="project-tech"><strong>Tecnologías:</strong> Three.js, Cannon.js, WebGL, Web Workers</p>
             </div>
             
             <div class="project-card">
                 <h3>Galería Virtual 3D</h3>
-                <p>Espacio virtual para exhibir modelos 3D con navegación en primera persona.</p>
-                <p><strong>Tecnologías:</strong> Three.js, PointerLockControls</p>
+                <p>Espacio virtual para exhibir modelos 3D con navegación en primera persona, iluminación dinámica y selección de objetos.</p>
+                <p class="project-tech"><strong>Tecnologías:</strong> Three.js, PointerLockControls, Raycaster</p>
+            </div>
+            
+            <div class="project-card">
+                <h3>Dashboard de Datos 3D</h3>
+                <p>Visualización de datos complejos mediante gráficos 3D interactivos. Incluye animaciones y actualización en tiempo real.</p>
+                <p class="project-tech"><strong>Tecnologías:</strong> Three.js, D3.js, WebSockets, Node.js</p>
             </div>
         </div>
     </section>
+
+    <!-- FOOTER -->
 
     <!-- SCRIPTS -->
     <script type="module">
         // IMPORTACIÓN DE THREE.JS
         import * as THREE from 'https://unpkg.com/three@0.128.0/build/three.module.js';
-        import { OrbitControls } from 'https://unpkg.com/three@0.128.0/examples/jsm/controls/OrbitControls.js';
         
-        // VARIABLES GLOBALES
-        let scene1, scene2, renderer1, renderer2, camera1, camera2;
-        let cube1, cube2, controls2;
-        let animationId1, animationId2;
-        
-        // PRÁCTICA 1: CUBO GIRANDO
-        function loadPractice1() {
-            // Detener práctica 2 si está activa
-            if (animationId2) {
-                cancelAnimationFrame(animationId2);
-                if (renderer2 && renderer2.domElement.parentNode) {
-                    renderer2.domElement.parentNode.removeChild(renderer2.domElement);
-                }
-            }
-            
-            const canvas = document.getElementById('canvas1');
+        // ========== FUNCIÓN PARA CREAR VISTAS PREVIAS ==========
+        function createPreview(canvasId, type) {
+            const canvas = document.getElementById(canvasId);
             
             // Limpiar canvas
             while (canvas.firstChild) {
@@ -398,178 +544,143 @@
             }
             
             // Crear escena
-            scene1 = new THREE.Scene();
-            scene1.background = new THREE.Color(0x000000);
+            const scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0a0a1a);
             
             // Crear cámara
-            camera1 = new THREE.PerspectiveCamera(
-                75,
+            const camera = new THREE.PerspectiveCamera(
+                60,
                 canvas.clientWidth / canvas.clientHeight,
                 0.1,
                 1000
             );
-            camera1.position.z = 5;
+            camera.position.set(2, 1, 3);
+            camera.lookAt(0, 0, 0);
             
             // Crear renderer
-            renderer1 = new THREE.WebGLRenderer({ antialias: true });
-            renderer1.setSize(canvas.clientWidth, canvas.clientHeight);
-            canvas.appendChild(renderer1.domElement);
+            const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(canvas.clientWidth, canvas.clientHeight);
+            renderer.setClearColor(0x0a0a1a);
+            canvas.appendChild(renderer.domElement);
             
-            // Iluminación
+            // Iluminación básica
             const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene1.add(ambientLight);
+            scene.add(ambientLight);
             
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 7);
-            scene1.add(directionalLight);
+            const light1 = new THREE.PointLight(0x00ff88, 0.8);
+            light1.position.set(2, 2, 2);
+            scene.add(light1);
             
-            // Crear cubo verde
-            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-            const material = new THREE.MeshPhongMaterial({ 
-                color: 0x00ff88,
-                shininess: 100
-            });
-            cube1 = new THREE.Mesh(geometry, material);
-            scene1.add(cube1);
+            const light2 = new THREE.PointLight(0x0099ff, 0.5);
+            light2.position.set(-2, 1, -2);
+            scene.add(light2);
             
-            // Añadir wireframe para definición
-            const edgesGeometry = new THREE.EdgesGeometry(geometry);
-            const edgesMaterial = new THREE.LineBasicMaterial({ 
-                color: 0x000000,
-                linewidth: 1
-            });
-            const wireframe = new THREE.LineSegments(edgesGeometry, edgesMaterial);
-            cube1.add(wireframe);
+            // Crear objetos según el tipo
+            let objects = [];
+            
+            if (type === 1) { // Cubo básico
+                const geo = new THREE.BoxGeometry(1, 1, 1);
+                const mat = new THREE.MeshStandardMaterial({ color: 0x00ff88, emissive: new THREE.Color(0x004422) });
+                const cube = new THREE.Mesh(geo, mat);
+                scene.add(cube);
+                objects.push(cube);
+            }
+            else if (type === 2) { // Cubo multicolor
+                const geo = new THREE.BoxGeometry(1, 1, 1);
+                const mats = [
+                    new THREE.MeshStandardMaterial({ color: 0xff4444 }),
+                    new THREE.MeshStandardMaterial({ color: 0x44ff44 }),
+                    new THREE.MeshStandardMaterial({ color: 0x4444ff }),
+                    new THREE.MeshStandardMaterial({ color: 0xffff44 }),
+                    new THREE.MeshStandardMaterial({ color: 0xff44ff }),
+                    new THREE.MeshStandardMaterial({ color: 0x44ffff })
+                ];
+                const cube = new THREE.Mesh(geo, mats);
+                scene.add(cube);
+                objects.push(cube);
+            }
+            else if (type === 3) { // Modelos glTF (representación con cubos)
+                const geo1 = new THREE.BoxGeometry(0.8, 0.8, 0.8);
+                const mat1 = new THREE.MeshStandardMaterial({ color: 0xffaa00 });
+                const cube1 = new THREE.Mesh(geo1, mat1);
+                cube1.position.set(-1, 0.2, 0);
+                scene.add(cube1);
+                
+                const geo2 = new THREE.SphereGeometry(0.6, 16);
+                const mat2 = new THREE.MeshStandardMaterial({ color: 0x00aaff });
+                const sphere = new THREE.Mesh(geo2, mat2);
+                sphere.position.set(1, 0.3, 0);
+                scene.add(sphere);
+                
+                objects.push(cube1, sphere);
+            }
+            else if (type === 4) { // Escena profesional
+                const geo1 = new THREE.BoxGeometry(0.7, 0.7, 0.7);
+                const mat1 = new THREE.MeshStandardMaterial({ color: 0xff4444, metalness: 0.8, roughness: 0.2 });
+                const cube = new THREE.Mesh(geo1, mat1);
+                cube.position.set(-1.2, 0.3, 0);
+                scene.add(cube);
+                
+                const geo2 = new THREE.SphereGeometry(0.6, 16);
+                const mat2 = new THREE.MeshStandardMaterial({ color: 0x44ff44, metalness: 0.3, roughness: 0.1 });
+                const sphere = new THREE.Mesh(geo2, mat2);
+                sphere.position.set(1.2, 0.4, 0);
+                scene.add(sphere);
+                
+                const geo3 = new THREE.TorusGeometry(0.5, 0.15, 16, 32);
+                const mat3 = new THREE.MeshStandardMaterial({ color: 0x4444ff, metalness: 0.5, roughness: 0.4 });
+                const torus = new THREE.Mesh(geo3, mat3);
+                torus.position.set(0, 0.4, -1);
+                torus.rotation.x = Math.PI / 2;
+                scene.add(torus);
+                
+                objects.push(cube, sphere, torus);
+            }
+            
+            // Grid para todas las vistas
+            const gridHelper = new THREE.GridHelper(4, 10, 0x00ff88, 0x333366);
+            gridHelper.position.y = -0.2;
+            scene.add(gridHelper);
             
             // Animación
-            function animate1() {
-                animationId1 = requestAnimationFrame(animate1);
+            function animate() {
+                requestAnimationFrame(animate);
                 
-                // Rotación automática en todos los ejes
-                cube1.rotation.x += 0.01;
-                cube1.rotation.y += 0.01;
-                cube1.rotation.z += 0.005;
+                objects.forEach(obj => {
+                    obj.rotation.x += 0.005;
+                    obj.rotation.y += 0.01;
+                });
                 
-                renderer1.render(scene1, camera1);
+                renderer.render(scene, camera);
             }
             
-            animate1();
+            animate();
             
             // Redimensionar
-            function handleResize1() {
-                camera1.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera1.updateProjectionMatrix();
-                renderer1.setSize(canvas.clientWidth, canvas.clientHeight);
+            function handleResize() {
+                camera.aspect = canvas.clientWidth / canvas.clientHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(canvas.clientWidth, canvas.clientHeight);
             }
             
-            window.addEventListener('resize', handleResize1);
-            
-            // Limpiar evento al cambiar de práctica
-            canvas._resizeHandler1 = handleResize1;
+            window.addEventListener('resize', handleResize);
+            canvas._resizeHandler = handleResize;
         }
         
-        // PRÁCTICA 2: ORBITCONTROLS Y TEXTURAS
-        function loadPractice2() {
-            // Detener práctica 1 si está activa
-            if (animationId1) {
-                cancelAnimationFrame(animationId1);
-                if (renderer1 && renderer1.domElement.parentNode) {
-                    renderer1.domElement.parentNode.removeChild(renderer1.domElement);
-                }
-            }
-            
-            const canvas = document.getElementById('canvas2');
-            
-            // Limpiar canvas
-            while (canvas.firstChild) {
-                canvas.removeChild(canvas.firstChild);
-            }
-            
-            // Crear escena
-            scene2 = new THREE.Scene();
-            scene2.background = new THREE.Color(0x000000);
-            
-            // Crear cámara
-            camera2 = new THREE.PerspectiveCamera(
-                75,
-                canvas.clientWidth / canvas.clientHeight,
-                0.1,
-                1000
-            );
-            camera2.position.z = 5;
-            
-            // Crear renderer
-            renderer2 = new THREE.WebGLRenderer({ antialias: true });
-            renderer2.setSize(canvas.clientWidth, canvas.clientHeight);
-            canvas.appendChild(renderer2.domElement);
-            
-            // Controles de órbita
-            controls2 = new OrbitControls(camera2, renderer2.domElement);
-            controls2.enableDamping = true;
-            controls2.dampingFactor = 0.05;
-            controls2.enableZoom = true;
-            
-            // Iluminación
-            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
-            scene2.add(ambientLight);
-            
-            const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-            directionalLight.position.set(5, 10, 7);
-            scene2.add(directionalLight);
-            
-            // Crear cubo con diferentes materiales/colores para cada cara
-            const geometry = new THREE.BoxGeometry(1.5, 1.5, 1.5);
-            
-            // Materiales de diferentes colores para cada cara (simulando texturas)
-            const materials = [
-                new THREE.MeshPhongMaterial({ color: 0xff0000 }), // Rojo
-                new THREE.MeshPhongMaterial({ color: 0x00ff00 }), // Verde
-                new THREE.MeshPhongMaterial({ color: 0x0000ff }), // Azul
-                new THREE.MeshPhongMaterial({ color: 0xffff00 }), // Amarillo
-                new THREE.MeshPhongMaterial({ color: 0xff00ff }), // Magenta
-                new THREE.MeshPhongMaterial({ color: 0x00ffff })  // Cian
-            ];
-            
-            cube2 = new THREE.Mesh(geometry, materials);
-            scene2.add(cube2);
-            
-            // Animación
-            function animate2() {
-                animationId2 = requestAnimationFrame(animate2);
-                
-                // Rotación suave automática
-                cube2.rotation.x += 0.005;
-                cube2.rotation.y += 0.005;
-                
-                // Actualizar controles
-                controls2.update();
-                
-                renderer2.render(scene2, camera2);
-            }
-            
-            animate2();
-            
-            // Redimensionar
-            function handleResize2() {
-                camera2.aspect = canvas.clientWidth / canvas.clientHeight;
-                camera2.updateProjectionMatrix();
-                renderer2.setSize(canvas.clientWidth, canvas.clientHeight);
-            }
-            
-            window.addEventListener('resize', handleResize2);
-            
-            // Limpiar evento al cambiar de práctica
-            canvas._resizeHandler2 = handleResize2;
-        }
+        // ========== INICIALIZAR VISTAS PREVIAS ==========
+        setTimeout(() => {
+            createPreview('canvas1', 1); // cubo1.html
+            createPreview('canvas2', 2); // cubo2.html
+            createPreview('canvas3', 3); // modelos_glTF.html
+            createPreview('canvas4', 4); // practica04.html
+        }, 100);
         
-        // SCROLL SUAVE PARA ENLACES INTERNOS
+        // ========== SCROLL SUAVE ==========
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
-                
                 const targetId = this.getAttribute('href');
                 if (targetId === '#') return;
-                
                 const targetElement = document.querySelector(targetId);
                 if (targetElement) {
                     window.scrollTo({
@@ -580,36 +691,17 @@
             });
         });
         
-        // CARGAR PRÁCTICA 1 POR DEFECTO AL ENTRAR A LA SECCIÓN
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting && entry.target.id === 'diseno-3d') {
-                    // Cargar práctica 1 automáticamente al ver la sección
-                    if (!animationId1 && !animationId2) {
-                        loadPractice1();
-                    }
+        // ========== REDIMENSIONAMIENTO GLOBAL ==========
+        window.addEventListener('resize', () => {
+            ['canvas1', 'canvas2', 'canvas3', 'canvas4'].forEach(id => {
+                const canvas = document.getElementById(id);
+                if (canvas && canvas._resizeHandler) {
+                    canvas._resizeHandler();
                 }
             });
-        }, { threshold: 0.5 });
-        
-        observer.observe(document.getElementById('diseno-3d'));
-        
-        // MANEJAR REDIMENSIONAMIENTO DE VENTANA
-        window.addEventListener('resize', () => {
-            // Redimensionar práctica 1 si está activa
-            const canvas1 = document.getElementById('canvas1');
-            if (canvas1._resizeHandler1) {
-                canvas1._resizeHandler1();
-            }
-            
-            // Redimensionar práctica 2 si está activa
-            const canvas2 = document.getElementById('canvas2');
-            if (canvas2._resizeHandler2) {
-                canvas2._resizeHandler2();
-            }
         });
         
-        console.log('✅ Portafolio 3D de Diego Yahir Castañon Sanchez cargado');
+        console.log('✅ Portafolio 3D con 4 prácticas cargado correctamente');
     </script>
 </body>
 </html>
